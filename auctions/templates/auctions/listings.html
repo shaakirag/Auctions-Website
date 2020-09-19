@@ -1,0 +1,25 @@
+{% load static %}
+
+<div class="col-lg-3">
+    <div class="box-element product">
+        <img class="thumbnail" src="{{ listing.imageURL }}" alt="No image">
+        <div class="box-element product">
+            <h3>
+                <strong>{{ listing.title }}</strong>
+            </h3
+            <small><strong>Category: </strong>
+                {% if listing.category %}
+                    <a href="{% url 'category-listings' listing.category.id %}">{{ listing.category }}</a>
+                {% else %}
+                    Uncategorized
+                {% endif %}        
+            </small>
+            <div>
+                <p>{{ listing.description }}</p>
+            </div>
+            <hr>
+            <a class="btn btn-outline-success" href="{% url 'listing-detail' listing.id %}">View</a>
+            <h4 style="display: inline-block; float: right"><strong>${{ listing.current_price }}</strong></h4>
+        </div>
+    </div>
+</div>

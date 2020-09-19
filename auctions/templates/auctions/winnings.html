@@ -1,0 +1,38 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h2 id="active">Winnings for {{ request.user.username }}</h2>
+
+    <div class="row">
+		{% for winning in winnings %}
+            <div class="col-lg-3">
+                <div class="box-element product">
+                    <hr>
+                    <h5>You have won this listing for <strong>${{ winning.listing.current_price }}</strong></h5>
+                    <hr>
+                    <img class="thumbnail" src="{{ winning.listing.imageURL }}">
+                    <div class="box-element product">
+                        <h3>
+                            <strong>{{ winning.listing.title }}</strong>
+                        </h3>
+                        <small><strong>Category: </strong>
+                            {% if winning.listing.category %}
+                                <a href="{% url 'category-listings' winning.listing.category.id %}">{{ winning.listing.category }}</a>
+                            {% else %}
+                                Uncategorized
+                            {% endif %}        
+                        </small>
+                        <div>
+                            <p>{{ winning.listing.description }}</p>
+                        </div>
+                        <hr>
+                        <a class="btn btn-outline-success" href="{% url 'listing-detail' winning.listing.id %}">View</a>
+                        <h4 style="display: inline-block; float: right"><strong>${{ winning.listing.current_price }}</strong></h4>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+	</div>
+    
+{% endblock %}

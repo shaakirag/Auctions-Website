@@ -1,0 +1,35 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h2 id="active">Watchlist for {{ request.user.username }}</h2>
+
+    <div class="row">
+		{% for watchlist in watchlist %}
+            <div class="col-lg-3">
+                <div class="box-element product">
+                    <img class="thumbnail" src="{{ watchlist.listing.imageURL }}">
+                    <div class="box-element product">
+                        <h3>
+                            <strong>{{ watchlist.listing.title }}</strong>
+                        </h3>
+                        <small><strong>Category: </strong>
+                            {% if watchlist.listing.category %}
+                                <a href="{% url 'category-listings' watchlist.listing.category.id %}">{{ watchlist.listing.category }}</a>
+                            {% else %}
+                                Uncategorized
+                            {% endif %}        
+                        </small>
+                        <div>
+                            <p>{{ watchlist.listing.description }}</p>
+                        </div>
+                        <hr>
+                        <a class="btn btn-outline-success" href="{% url 'listing-detail' watchlist.listing.id %}">View</a>
+                        <h4 style="display: inline-block; float: right"><strong>${{ watchlist.listing.current_price }}</strong></h4>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+	</div>
+    
+{% endblock %}

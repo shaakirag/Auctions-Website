@@ -1,0 +1,13 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <h2 id="active">Active Listings</h2>
+
+    <div class="row">
+		{% for listing in listings %}
+            {% include "auctions/listings.html" %}
+        {% endfor %}
+	</div>
+    
+{% endblock %}

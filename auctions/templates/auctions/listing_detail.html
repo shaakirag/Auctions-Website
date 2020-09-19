@@ -1,0 +1,123 @@
+{% extends "auctions/layout.html" %}
+{% load static %}
+
+{% block body %}
+    <article class="media content-section">   
+        <div class="media-body">
+            <h2 class="article-title">{{ listing.title }}</h2>
+            <hr>
+            <div class="article-metadata">
+                Listed by: <a class="mr-2" href="#">{{ listing.author }}</a>
+                <br>
+                <small class="text-muted">{{ listing.date_created|date:"F d, Y" }}</small>
+                <br><br>
+                <div>
+                    {% if listing.author == user %}
+                        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'listing-update' listing.id %}">Update</a>
+                        <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'listing-delete' listing.id %}">Delete</a>
+                        <hr>
+                        {% if inactive %}
+                            <p>This listing has been closed.</p>
+                        {% else %}
+                            <form method='POST' action=''>
+                                {% csrf_token %}
+                                <button type="submit" name="listing-close" class="btn btn-danger">Close listing</button>
+                            </form> 
+                            <small>
+                                This will place the highest bidder as the winner.
+                                <br>
+                                <important><b>Note: </b></important>The delete button will delete this listing, there will be no winners :(
+                            </small>
+                        {% endif %}
+                    {% elif user.is_authenticated and listing.author != user %}
+                        {% if not won %}
+                            {% if listing.in_watchlist %}
+                                <form method='POST' action=''>
+                                    {% csrf_token %}
+                                    <button type="submit" name="watchlist-remove" class="btn btn-danger">Remove from watchlist</button>
+                                </form> 
+                            {% else %}
+                                <form method='POST' action=''>
+                                    {% csrf_token %}
+                                    <button type="submit" name="watchlist" class="btn btn-warning">Add to watchlist</button>
+                                </form> 
+                            {% endif %}
+                        {% else %} 
+                            <h5>You have won this listing for <strong>${{ listing.current_price }}</strong></h5>
+                        {% endif %}                  
+                    {% else %}
+                        <div><a href="{% url 'login' %}">Login</a> or <a href="{% url 'register' %}">register</a> to make bids, save listings, and create your own!</div>
+                    {% endif %}
+                </div>
+                <hr>
+            </div>
+            <img style="max-height: 25rem;" src="{{ listing.imageURL }}" alt="No image">
+            <hr>
+            <p class="article-content"><strong>Description:</strong><br>{{ listing.description }}</p>
+            <hr>
+            <h4>Details:</h4>
+            <hr>
+            {% for message in messages %}
+                <p 
+                    style="background-color: #FFA07A;
+                    color: #fff;
+                    padding: 10px;
+                    margin-top: 10px;">
+                        {{message}}
+                </p>
+            {% endfor %}
+            {% if not won %}
+                {% if user.is_authenticated and listing.author != user %}
+                    <div class="form-group col-md-4">
+                        <form method='POST' action=''>
+                            {% csrf_token %}
+                            <input required name="amount" type="number" min='0' class="form-control">
+                            <br>
+                            <button type="submit" name="bid" class="btn btn-dark">Place Bid</button>
+                        </form>
+                    </div>
+                {% endif %}
+            {% endif %}
+            <ul>
+                <li><strong>Current Price:</strong> ${{ listing.current_price }}</li>
+                <li><strong>Bids</strong></li>
+                    <ul>
+                        {% for bid in bids %}
+                            <li>{{ bid.user }}: ${{ bid.amount }}</li>
+                        {% empty %}
+                            <li>No bids yet!</li>
+                        {% endfor %}
+                    </ul>
+                    
+            </ul>
+            <hr>
+            <h4>Comments</h4>
+            <hr>
+            {% if not won %}
+                {% if user.is_authenticated and listing.author != user %}
+                    <form action="" method="POST">
+                        {% csrf_token %}
+                        <div class="form-group" style="border: 0.001em solid black; max-width: 30em; padding: 1em;">
+                            <button class="btn btn-info">Posting as: {{user.username}}</button>
+                            <br><br>
+                            {{form.as_p}}
+                            <small>Note: Username will be published.</small><br><br>
+                            <input class="btn btn-primary" name="comment" type="submit" value="Comment">
+                        </div>
+                    </form>
+                {% endif %}
+            {% endif %}
+            {% for comment in comments %}
+                <div>
+                    <h7>{{ comment.author }} says:</h7>
+                    <p>{{ comment.content }}</p>
+                    <hr>
+                </div>
+            {% empty %}
+                <div>
+                    <p>No comments yet!</p>
+                </div>
+            {% endfor %}
+        </div>
+    </article>
+{% endblock %}
